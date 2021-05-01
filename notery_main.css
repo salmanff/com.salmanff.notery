@@ -11,42 +11,27 @@ h1, h2, h3 {font-size: inherit;}
     background-color: whitesmoke;
     line-height: 100%;
 }
-
 .topBar_Desktop {
     top:0;
     height: 23px;
     padding-top: 5px;
-    padding-left: 125px;
+    padding-left: 175px;
     z-index: 10;
 }
-.topBar_Desktop_small {
+.topBar_Desktop_small, .topBar_Mobile  {
     top:0;
     height: 47px;
     padding-top: 10px;
-    padding-left: 75px;
+    padding-left: 50px;
     z-index: 10;
 }
-.topBar_Mobile,  .topBar_Mobile_Header {
-    position: absolute;
-    padding-top: 10px;
-    top:0px;
-    -webkit-transition-duration: 500ms;
-    -webkit-transition-timing-function:"ease-in";
-    -webkit-transform: translate3d(0, -80px, 0);
-    z-index: 11;
-}
-.topBar_Mobile  {
-    height: 47px;
-    padding-left: 80px;
-    padding-top: 10px;
-    top:0px;
-}
 .topBar_Mobile_Header {
-    height: 70px;    
-    padding-left: 60px;
+    top:0;
+    height: 70px;
     padding-top: 35px;
+    padding-left: 50px;
+    z-index: 10;
 }
-
 .topBut_Mobile {
     padding-top: 0;
     margin-top: -6px;
@@ -90,7 +75,7 @@ h1, h2, h3 {font-size: inherit;}
 }
 .clickable {
 	cursor: pointer;
-	color: #2060ff;
+	color: #2060ff !important;
 }
 
 #click_syncNow_0, #click_newNote_0, #click_xtraMenuSlider_0, #click_xtraMenuClose_0  {
@@ -119,7 +104,6 @@ h1, h2, h3 {font-size: inherit;}
     font-size: 14px;
     width: 200px;
     padding: 10px;
-    padding-top: 22px;
     background-color: white;
     color: #868686;
     overflow-y: scroll;
@@ -171,7 +155,7 @@ h1, h2, h3 {font-size: inherit;}
     font-size: 18px;
 }
 .searchOuter_Desktop {
-    font-size: 14px;    
+    font-size: 14px;
 }
 #idSearchBox {
 	border: 1px solid whitesmoke;
@@ -184,7 +168,7 @@ h1, h2, h3 {font-size: inherit;}
 	margin-bottom: 0;
 }
 #click_searchNowAllText, #click_searchNowHeaders{
-    width: 45%; float: left; text-align: center;    
+    width: 45%; float: left; text-align: center;
     border: 1px solid grey;
     margin-bottom: 10px;
     cursor: pointer;
@@ -224,7 +208,7 @@ h1, h2, h3 {font-size: inherit;}
 }
 .leftbarSearchButtInactive {
     background-color: darkgrey;
-    color: whitesmoke;    
+    color: whitesmoke;
 }
 
 #moreSearchptions {
@@ -232,7 +216,7 @@ h1, h2, h3 {font-size: inherit;}
     text-align: center;
 }
 #click_clearSearch, #click_searchOnline_1, #click_takeOffline_1, #click_importToPosts_2 {
-    width: 90%; 
+    width: 90%;
     min-width: 120px;
     border-radius: 5px;
     text-align: center;
@@ -282,13 +266,13 @@ h1, h2, h3 {font-size: inherit;}
 }
 
 #idTitle{
-	font-size:24px;
     color: #868686;
     line-height: 110%;
     background-color: none;
     display: none;
 }
 .title_Desktop {
+    font-size:24px;
     position: absolute;
     max-height: 26px;
     top: 47px;
@@ -296,21 +280,19 @@ h1, h2, h3 {font-size: inherit;}
     right:25%;
 }
 .title_Desktop_small {
+    font-size:24px;
     position: absolute;
     max-height: 26px;
     top: 47px;
-    left:6px;    
+    left:6px;
     right:6px;
 }
 .title_Mobile {
-    margin-top: 3px;
-    margin-left:60px;
-    margin-right:52px;
-}
-.title_Mobile_Header {
-    margin-top: 23px;
-    margin-left:60px;
-    margin-right:52px;
+    font-size:30px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    margin-left:6px;
+    margin-right:6px;
 }
 
 #idLabels {
@@ -336,20 +318,22 @@ h1, h2, h3 {font-size: inherit;}
     position: absolute;
     max-height: 14px;
     top: 77px;
-    left:6px;    
+    left:6px;
     right:6px;
 }
 .label_Mobile {
-    margin-top: 5px;
-    margin-left:60px;
-    margin-right:52px;
+    font-size: 24px;
+    margin-left:6px;
+    margin-right:6px;
+    margin-top: 10px;
+    margin-bottom: 10px;
     font-size: 18px;
 }
 #idEditor {
 	overflow: scroll;
 	font-size: 16px;
 	border: 1px solid silver;
-	line-height: 140%;
+	line-height: 120%;
     color: #868686;
     background-color: none;
 }
@@ -361,27 +345,23 @@ h1, h2, h3 {font-size: inherit;}
 }
 .edTextSize_large {
     font-size: 24px;
-} 
+    line-height: 30px;
+}
 .editor_Desktop {
     position:absolute;
     top: 100px;
     right:6px;
     left:195px;
-    bottom:5px; 
+    bottom:5px;
 }
 .editor_SmallDesktop {
     position:absolute;
     top: 100px;
     right:6px;
     left:6px;
-    bottom:5px; 
+    bottom:5px;
 }
 .editor_Mobile {
-    margin-top: 5px;
-    margin-right: 6px;
-    margin-left: 6px;
-}
-.editor_Mobile_Header {
     margin-top: 5px;
     margin-right: 6px;
     margin-left: 6px;
@@ -391,7 +371,7 @@ h1, h2, h3 {font-size: inherit;}
     font-size: 9px;
     font-style: italic;
     line-height: 120%;
-    overflow: hidden;	
+    overflow: hidden;
 }
 .info_Desktop {
     position: absolute;
@@ -399,7 +379,7 @@ h1, h2, h3 {font-size: inherit;}
     height: 45px;
     top: 49px;
     left: 75%;
-    right: 5px;	
+    right: 5px;
 }
 .info_DesktopSmallScreen {
     position: absolute;
@@ -425,11 +405,11 @@ h1, h2, h3 {font-size: inherit;}
     background-color: rgba(0, 0, 0, 0.4);
     min-height: 60px;
     z-index: 24;
-} 
+}
 .warnings_Desktop {
     top: 35px;
     right: 6px;
-    left: 195px;    
+    left: 195px;
     padding-left: 3px;
 }
 .warnings_Mobile {
@@ -474,7 +454,7 @@ content:attr(data-placeholder) }
 }
 .topLabels_Mobile {
 	margin-left: 80px;
-    margin-right: 80px;	
+    margin-right: 80px;
 }
 
 /* related to xtraMenu*/
@@ -517,7 +497,10 @@ content:attr(data-placeholder) }
     line-height: 2;
 }
 #encPassword_1, #encPassword_2 {
-    min-width: 50px;    
+    min-width: 50px;
+}
+#keepOnDeviceTable {
+    margin-left: 30px;
 }
 #fileUploader {
     width: 100%;
@@ -543,6 +526,5 @@ li {
 }
 .panel-body {
     min-height: 100px;
-    padding: 10px;   
+    padding: 10px;
 }
-  
