@@ -179,11 +179,8 @@ freezr.initPageScripts = function() {
 	setMobileVersion(true);
 	startup();
 
-	if (notery.data.local_backups_do) {stats.local_backup_timer = self.setInterval (doLocalBackUp,  notery.data.local_backup_interval  ) };
+  if (notery.data.local_backups_do) {stats.local_backup_timer = self.setInterval (doLocalBackUp,  notery.data.local_backup_interval  ) };
 
-  if (document.getElementById('freezerMenuButt')) {
-    document.getElementById('freezerMenuButt').src = 'freezr/static/freezer_log_top.png'
-  }
 }
 var startup = function() {
 	var wrongId = false;
