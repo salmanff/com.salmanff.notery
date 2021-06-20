@@ -1,4 +1,11 @@
 {
+  "identifier": "com.salmanff.notery",
+  "display_name":"Notery",
+  "version": "0.0.400",
+  "description": "A simple (somewhat outdated) note taking app",
+  "app_url": "https://github.com/salmanff/com.salmanff.notery",
+  "manifest_url": "https://github.com/salmanff/com.salmanff.notery/blob/main/manifest.json",
+
 	"meta": {
 		"app_name":"com.salmanff.notery",
 		"app_display_name":"Notery",
@@ -16,7 +23,7 @@
 	},
 
 
-	"collections": {
+	"app_tables": {
 		"posts": {
 			"strictly_Adhere_To_schema":false,
 			"field_names":{

@@ -1,5 +1,4 @@
-
-// notery.js - a freezr app by sf v2017-11 (with updates to ceps in 2019)
+// notery.js - a freezr app by sf v2017-11 (with updates to ceps in 2019-2021)
 		// App originaly based on Dave Winer's
 		//	myword.io/testing/hellomediumeditor.html
 		//	which is based on github.com/yabwe/medium-editor
@@ -68,12 +67,13 @@ freezr.initPageScripts = function() {
 			]
 		  }
 	});
-	if (!freezrMeta.appToken && notery.data.freezrMeta.appToken) {
+	if (!freezrMeta.appToken && notery.data.freezrMeta && notery.data.freezrMeta.appToken) {
 		freezrMeta.appToken = notery.data.freezrMeta.appToken;
 		freezrMeta.userId = notery.data.freezrMeta.userId;
 		freezrMeta.serverAddress = notery.data.freezrMeta.serverAddress;
 		freezrMeta.adminUser = notery.data.freezrMeta.adminUser;
 	}
+  if (!freezr.app.isWebBased) freezr.utils.addFreezerDialogueElements()
 
 	document.addEventListener('click', function(e) {
 		var elSects = e.target.id.split('_');
@@ -179,7 +179,8 @@ freezr.initPageScripts = function() {
 	setMobileVersion(true);
 	startup();
 
-	if (notery.data.local_backups_do) {stats.local_backup_timer = self.setInterval (doLocalBackUp,  notery.data.local_backup_interval  ) };
+  if (notery.data.local_backups_do) {stats.local_backup_timer = self.setInterval (doLocalBackUp,  notery.data.local_backup_interval  ) };
+
 }
 var startup = function() {
 	var wrongId = false;
@@ -187,6 +188,7 @@ var startup = function() {
 	if (notery.data.encryptPW) stats.encryptPW = notery.data.encryptPW;
 	decryptAllPosts();
 
+	if (!notery.data.freezrMeta) notery.data.freezrMeta = {};
 	if (!notery.data.freezrMeta.userId) notery.data.freezrMeta.userId = freezrMeta.userId? freezrMeta.userId:null;
 	if (freezrMeta.userId && freezrMeta.userId != notery.data.freezrMeta.userId){
 		if (confirm("There is data from another user on your device. If you press okay, that data will be deleted.")) {
@@ -206,7 +208,7 @@ var startup = function() {
 	if (!wrongId) {
 		populateLeftPanel();
 		document.getElementById("click_syncNow_0").className = document.getElementById("click_syncNow_0").className.replace("fa fa-refresh clickable topBut","fa fa-spin fa-refresh topBut");
-		if (  (!freezr.app.isWebBased && !freezrMeta.adminUser) || stats.encryptFault  || (notery.data.encryptDo && !stats.encryptPW) ) {
+		if (  (!freezr.app.isWebBased && !freezrMeta.userId) || stats.encryptFault  || (notery.data.encryptDo && !stats.encryptPW) ) {
 			wrapUpTryingToSync();
 		} else {
 			if (!freezr.app.isWebBased) {
@@ -386,10 +388,8 @@ var saveNote = function(forceSaveAndSync) {
 		showWarning("ERROR - COULD NOT SAVE POST - NO POST FOUND",5000);
 	} else if(!post_consistent_with_current_data(curr_post_details) ) {
 		showWarning("Need to reset posts - conflict created",5000);
-		console.log("curr_post_details (local)")
-		console.log(curr_post_details)
-		console.log("curr_post_pointer (alread saved)")
-		console.log(curr_post_pointer)
+		console.warn("curr_post_details (local)", curr_post_details)
+		console.warn("curr_post_pointer (alread saved)", curr_post_pointer)
 		if (!freezr.app.isWebBased) {alert("There was an errr saving. Please restart the app.")}
 		else if (confirm ( "Unexpected error in SaveNote - Press okay restart app") )  {window.location = "/apps/com.salmanff.notery"};
 	} else if (curr_post_details.cipher) {
@@ -530,12 +530,13 @@ var removeJlos = function() {
     populateLeftPanel();
     showFirstValidNote();
 }
-freezr.app.logoutCallback = removeJlos;
 
 var removeJlosAndQuit = function() {
+    removeJlos();
     notery.reInitializeData();
+	  if (freezrMeta.userId) freezr.utils.logout(function(){});
+    showWarning('Quit the application to log in again.')
     notery.save();
-	if (freezrMeta.userId) freezr.utils.logout();
 }
 function post_consistent_with_current_data (post_details) {
 	//onsole.log("post_details", post_details)
@@ -545,8 +546,8 @@ function post_consistent_with_current_data (post_details) {
 	} else if (post_details._id) {
 		if (post_details._id != curr_post_pointer._id) {
 			showWarning("CONFLICT - id's inconsistent - post_consistent_with_current_data 2 - post detials id:"+post_details._id+" curr_post_pointer id:"+curr_post_pointer._id);
-			console.log("post_details "+JSON.stringify(post_details))
-			console.log("curr_post_pointer "+JSON.stringify(curr_post_pointer))
+			console.warn("post_details "+JSON.stringify(post_details))
+			console.warn("curr_post_pointer "+JSON.stringify(curr_post_pointer))
 		}
 		return (post_details._id == curr_post_pointer._id)
 	} else if (curr_post_pointer._id) {
@@ -674,7 +675,7 @@ var showNextValidNote  = function () {
 	}
 }
 var createConflictedNote = function(copyOfReturnedConflictedItem, itemInList) {
-	console.log({copyOfReturnedConflictedItem, itemInList})
+	//onsole.log({copyOfReturnedConflictedItem, itemInList})
 	if (confirm("There was a conflict syncing your note on "+copyOfReturnedConflictedItem.title+". Do you want to create a new copy of the note?") ) {
 		copyOfReturnedConflictedItem.created_locally = new Date().getTime();
 		copyOfReturnedConflictedItem.title = "COPY: "+copyOfReturnedConflictedItem.title;
@@ -686,8 +687,9 @@ var createConflictedNote = function(copyOfReturnedConflictedItem, itemInList) {
 	return null
 }
 var showWarning = function(msg, timing) {
+  document.getElementById('warnings').onclick = function() {showWarning()}
 	// null msg clears the message
-	console.log("warning "+msg)
+	console.warn("warning "+msg)
 	if (stats.warningTimeOut) clearTimeout(stats.warningTimeOut);
 	if (!msg) {
 		$("#warnings").html ("");
@@ -996,6 +998,7 @@ var setMobileVersion = function(force) {
 		bodyDiv = document.getElementsByClassName("panel-body")[0];
 		if (bodyDiv) {bodyDiv.style.paddingTop = usingSmallOrMobile? "50px":"0px";}
 
+    /*
 		if (isMac()) { // shift logo over to make room for buttons
 			if (!usingSmallOrMobile && !freezr.app.isWebBased) { // electron
 				document.getElementById('topBar').style.paddingLeft="175px";
@@ -1003,7 +1006,7 @@ var setMobileVersion = function(force) {
 				document.getElementById('click_topLogo').style.top="0";
 				document.getElementById('click_topLogo').style.height="38px";
 			} else if (usingSmallScreenVersion && !usingMobileVersion && !freezr.app.isWebBased) { // electron
-				document.getElementById('click_topLogo').style.left="65px";
+				document.getElementById('click_topLogo').style.left="35px";
 				document.getElementById('click_topLogo').style.top="4px";
 				document.getElementById('topBar').style.paddingLeft="100px";
 			} else {
@@ -1012,6 +1015,7 @@ var setMobileVersion = function(force) {
 				document.getElementById('click_topLogo').style.height=null;
 			}
 		}
+    */
 
 		document.getElementById("menuInner").className = isSmallScreen? "xtraMenu_Mobile":"";
 
@@ -1066,8 +1070,8 @@ window.onresize = function(event) {
 
 // Syncing Callbacks
 var doSyncPosts = function () {
-	clearInterval(stats.localSaveIntervaler); stats.localSaveIntervaler=null;
-	if (!freezr.app.isWebBased && !freezrMeta.adminUser) {
+  clearInterval(stats.localSaveIntervaler); stats.localSaveIntervaler=null;
+	if (!freezr.app.isWebBased && !freezrMeta.userId) {
 		document.getElementById("click_syncNow_0").className = document.getElementById("click_syncNow_0").className.replace("fa fa-spin fa-refresh topBut","fa fa-refresh clickable topBut");
 		console.warn("need to login to sync.",3000)
 	} else if (stats.encryptFault) {
@@ -1075,11 +1079,11 @@ var doSyncPosts = function () {
 	} else if (stats.syncInProgress) {
 		console.log("error -syncing already in progress");
 	}	else {
-		//onsole.log("going to sync "+freezrMeta.serverAddress+" alreadySyncedOnce:"+stats.alreadySyncedOnce);
+		// onsole.log("going to sync "+freezrMeta.serverAddress+" alreadySyncedOnce:"+stats.alreadySyncedOnce);
 		document.getElementById("click_syncNow_0").className = document.getElementById("click_syncNow_0").className.replace("fa fa-refresh clickable topBut","fa fa-spin fa-refresh topBut");
 		stats.syncCounter = 1;
 		stats.syncInProgress = true;
-		notery.sync("posts", {
+    notery.sync("posts", {
 			gotNewItemsCallBack: syncGotNewPosts,
 			warningCallBack: syncWarningCB,
 			uploadedItemTransform: encryptedPost,
@@ -1092,7 +1096,7 @@ var doSyncPosts = function () {
 	}
 };
 var clickedToSyncPosts = function() {
-	if ((!freezr.app.isWebBased && !freezrMeta.adminUser) || freezr.app.offlineCredentialsExpired){
+	if (freezr.app.offlineCredentialsExpired){
 		// review oct 2017
 		//document.getElementById("click_syncNow_0").className = document.getElementById("click_syncNow_0").className.replace("fa fa-spin fa-refresh topBut","fa fa-refresh clickable topBut");
 		freezr.utils.freezrMenuOpen();
@@ -1104,7 +1108,7 @@ var clickedToSyncPosts = function() {
 	}
 }
 var syncGotNewPosts = function(newPosts, changedPosts) {
-	console.log("GOT changedPosts "+changedPosts.length+" GOT newPosts "+newPosts.length);
+	// onsole.log("GOT changedPosts "+changedPosts.length+" GOT newPosts "+newPosts.length);
 	newPosts.forEach(function (aPost ){
 		resultIndex = notery.idIndex("posts", aPost, true);
 		addLeftPanelElementInDateOrder(resultIndex, "local");
@@ -1132,10 +1136,9 @@ var syncWarningCB = function(msgJson) {
 	showWarning(msgJson.msg)
 	}
 var syncUploadedItemCB= function(listItemNumber) {
-	console.log("syncUploadedItemCB curr_post_pointer.section listItemNumber == curr_post_pointer.num:",curr_post_pointer.section,listItemNumber,curr_post_pointer.num)
+	// onsole.log("syncUploadedItemCB curr_post_pointer.section listItemNumber == curr_post_pointer.num:",curr_post_pointer.section,listItemNumber,curr_post_pointer.num)
 	if (curr_post_pointer.section=="local" && listItemNumber == curr_post_pointer.num) {
 		curr_post_pointer._id = notery.data.posts[curr_post_pointer.num]._id
-		console.log("setting id's the same")
 		showCurrentNoteStats();
 	}
 }
@@ -1149,6 +1152,7 @@ var firstSyncEndCB = function(aMsg) {
 	stats.syncInProgress = false;
 	stats.alreadySyncedOnce = true;
 	wrapUpTryingToSync();
+  if (!aMsg) aMsg = {msg:('Welcome ' + freezrMeta.userId)}
 	showSyncEndMessages(aMsg)
 }
 const showSyncEndMessages = function (aMsg){
@@ -1163,7 +1167,7 @@ const showSyncEndMessages = function (aMsg){
 		}
 	} else if (aMsg && aMsg.msg) {
 			var warnTime = (aMsg.error && aMsg.error=="no connection")? 1000:5000;
-			showWarning("warning "+aMsg.msg, warnTime);
+			showWarning(aMsg.msg, warnTime);
 	}
 }
 var wrapUpTryingToSync = function() {
@@ -1305,11 +1309,13 @@ var doSearchOnline = function(what) {
 
 // OTHER - Backups, online area
 // // review oct 2017 var offlineLoginCallback = function(jsonResp){
-freezr.app.loginCallback = function(jsonResp){
-	//onsole.log("GOT offlineLoginCallback CALLBACK "+JSON.stringify(jsonResp));
-	if (jsonResp.error) {
+freezr.app.logoutCallback = removeJlosAndQuit
+freezr.app.loginCallback = function(err, jsonResp){
+	// onsole.log("GOT offlineLoginCallback CALLBACK "+JSON.stringify(jsonResp));
+	if (jsonResp && jsonResp.error) {
 		showWarning("Could not log you in - "+jsonResp.error,3000);
 	} else {
+    console.log('Welcome ' + freezrMeta.userId)
 		notery.data.freezrMeta = freezrMeta;
 		notery.save(); // review oct 2017
 		doSyncPosts();
